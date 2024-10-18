@@ -1,0 +1,101 @@
+.main-sidebar {
+    background: #3d3d3d;
+    transition: width 0.3s ease;
+    width: 240px;
+    height: 100%;
+    position: relative;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    box-shadow: 5px 0 20px 1px rgba(0, 0, 0, 0.37);
+    user-select: none;
+}
+
+.main-sidebar.closed {
+    width: 0; /* Collapse the sidebar */
+    overflow: hidden; /* Hide sidebar content */
+}
+
+.main-sidebar.open {
+    width: 240px; /* Default open width */
+}
+
+.sidebar-header {
+    width: 100%;
+    height: 7%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #0f65ac;
+    box-shadow: 0 5px 5px 1px rgba(0, 0, 0, 0.37), inset -5px -5px 10px rgba(255, 255, 255, 0.315);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.sidebar-title {
+    font-size: 22px;
+    font-weight: 700;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-shadow: 0 5px 5px rgba(0, 0, 0, 0.473);
+}
+
+.sidebar-items {
+    width: 100%;
+    height: max-content;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 1px;
+    margin-top: 10px;
+}
+
+.sidebar-item {
+    width: 95%;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: larger;
+    font-weight: 700;
+}
+
+.sidebar-item-icon {
+    position: absolute;
+    left: 20px;
+}
+
+.sidebar-item:hover {
+    border: 1px solid rgba(255, 255, 255, 0.185);
+    box-shadow: 0 0 5px 1px black;
+    cursor: pointer;
+}
+
+.sidebar-item:active {
+    box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.452);
+}
+
+/* Menu icon that moves based on sidebar state */
+.menu-icon {
+    cursor: pointer;
+    position: fixed; /* Make it fixed, so it's always accessible */
+    top: 10px;
+    background-color: #3d3d3d;
+    padding: 8px;
+    border-radius: 50%;
+    z-index: 10; /* Ensure it stays on top */
+    transition: left 0.3s ease;
+}
+
+/* When sidebar is closed, keep icon near the edge */
+.menu-icon.closed {
+    left: 10px; /* Stay outside of the sidebar */
+}
+
+/* When sidebar is open, move icon to the right */
+.menu-icon.open {
+    left: 250px; /* Position icon outside the open sidebar */
+}
+
+.menu-icon:hover {
+    background-color: #555; /* Optional hover effect */
+}
