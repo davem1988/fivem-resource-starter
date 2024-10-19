@@ -30,6 +30,7 @@
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     border-top-right-radius: 10px;
+    padding-bottom: 5px;
 }
 
 .sidebar-title {
@@ -37,6 +38,24 @@
     font-weight: 700;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     text-shadow: 0 5px 5px rgba(0, 0, 0, 0.473);
+}
+
+
+@media (max-height: 480px) {
+    .sidebar-title {
+        font-size: 15px;
+    }
+}
+
+.sidebar-footer {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: 100%;
+    height: 10%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
 }
 
 .sidebar-items {
@@ -61,7 +80,7 @@
 
 .sidebar-item-icon {
     position: absolute;
-    left: 20px;
+    left: 10px;
 }
 
 .sidebar-item:hover {
@@ -93,7 +112,7 @@
 
 /* When sidebar is open, move icon to the right */
 .menu-icon.open {
-    left: 250px; /* Position icon outside the open sidebar */
+    left: 215px; /* Position icon outside the open sidebar */
 }
 
 .menu-icon:hover {

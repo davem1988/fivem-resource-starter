@@ -20,7 +20,7 @@ declare global {
 // Initialize or use the cached connection
 const cached: MongooseCache = global.mongoose || { conn: null, promise: null };
 
-async function connectToDatabase() {
+async function connectDB() {
   if (cached.conn) {
     return cached.conn;
   }
@@ -40,4 +40,4 @@ async function connectToDatabase() {
   return cached.conn;
 }
 
-export default connectToDatabase;
+export default connectDB;

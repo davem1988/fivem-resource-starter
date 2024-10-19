@@ -2,9 +2,9 @@ import React from 'react'
 
 const SettingsPage = () => {
   return (
-    <div>
-      Settings
-    </div>
+      <div className='main-window'>
+        Settings
+      </div>
   )
 }
 
