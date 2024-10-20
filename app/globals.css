@@ -1,14 +1,20 @@
 :root {
-  --background-color: #4d4d4d;
-  --text-color: #fff;
-
+  --background-color-light: #ffffff;
+  --text-color-light: #000000;
+  --background-color-dark: #4d4d4d;
+  --text-color-dark: #ffffff;
 }
 
 body {
   padding: 0;
   margin: 0;
-  background: var(--background-color);
-  color: var(--text-color);
+  background: var(--background-color-dark);
+  color: var(--text-color-dark);
+}
+
+body.light-mode {
+  background: var(--background-color-light);
+  color: var(--text-color-light);
 }
 
 .main-window {
@@ -230,3 +236,23 @@ body {
 .toast {
   animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
 }
+
+/* Add these new styles for theme-specific elements */
+.light-mode .project-container {
+  background-color: #f0f0f0;
+}
+
+.light-mode .projects-list li {
+  background-color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.light-mode .projects-list h2 {
+  color: #333333;
+}
+
+.light-mode .projects-list p {
+  color: #666666;
+}
+
+/* Add more light mode styles as needed */

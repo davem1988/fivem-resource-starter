@@ -131,6 +131,16 @@ export async function PUT(request: Request, { params }: { params: { projectId: s
 
     const updatedProject = await request.json();
 
+    // Ensure all file contents are strings
+    const ensureFileContents = (folder: any) => {
+      folder.files = folder.files.map((file: any) => ({
+        ...file,
+        content: file.content || ''
+      }));
+      folder.folders.forEach(ensureFileContents);
+    };
+    ensureFileContents(updatedProject.rootFolder);
+
     user.projects[projectIndex] = updatedProject;
     await user.save();
 

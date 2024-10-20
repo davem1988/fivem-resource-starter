@@ -25,6 +25,9 @@ interface UserDocument extends Document {
   email: string;
   username: string; // Optional: you can add more user fields as needed
   projects: Project[];
+  settings: {
+    framework: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -53,6 +56,9 @@ const UserSchema = new Schema<UserDocument>({
   email: { type: String, required: true, unique: true },
   username: { type: String, required: true, unique: true },
   projects: [ProjectSchema],
+  settings: {
+    framework: { type: String, enum: ['ESX', 'QBCore', 'None'], default: 'None' },
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

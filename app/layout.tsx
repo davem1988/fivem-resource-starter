@@ -3,6 +3,7 @@ import "./globals.css";
 import SidebarLayout from "@/components/SidebarLayout";
 import { ClerkProvider } from '@clerk/nextjs';
 import { ToastProvider } from '@/contexts/ToastContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
 export const metadata: Metadata = {
   title: "FiveMaker",
@@ -18,9 +19,11 @@ export default function RootLayout({
     <html lang="en">
       <ClerkProvider>
         <ToastProvider>
-          <body>
-            <SidebarLayout>{children}</SidebarLayout>
-          </body>
+          <ThemeProvider>
+            <body>
+              <SidebarLayout>{children}</SidebarLayout>
+            </body>
+          </ThemeProvider>
         </ToastProvider>
       </ClerkProvider>
     </html>

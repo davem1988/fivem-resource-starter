@@ -6,11 +6,12 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/contexts/ToastContext';
 import dynamic from 'next/dynamic';
 import styles from './ProjectPage.module.css';
-import { Plus, FolderPlus, FilePlus, Trash2, Delete, FolderMinus, Trash } from 'lucide-react';
+import { FolderPlus, FilePlus, Trash } from 'lucide-react';
 import Tooltip from '@/components/Tooltip';
 import { registerFivemLuaLanguage } from '@/utils/fivemLuaLanguageService';
-import { Editor, useMonaco } from '@monaco-editor/react';
+import { useMonaco } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface File {
   name: string;
@@ -125,6 +126,9 @@ export default function ProjectPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedFilePath, setSelectedFilePath] = useState<string[]>([]);
+  const [fiveMLoaded, setFiveMLoaded] = useState(false);
+  const [framework, setFramework] = useState<string>('');
+  const { theme } = useTheme();
 
   const searchParams = useSearchParams();
   const params = useParams();
@@ -136,8 +140,6 @@ export default function ProjectPage() {
   const description = searchParams.get('description') || '';
   const monaco = useMonaco();
 
-  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
-
   useEffect(() => {
     if (isLoaded && userId && projectId) {
       fetchProject();
@@ -146,10 +148,49 @@ export default function ProjectPage() {
 
 
   useEffect(() => {
-    if (monaco) {
-      registerFivemLuaLanguage(monaco);
+    if (monaco && userId && !fiveMLoaded) {
+      const fetchUserSettings = async () => {
+        try {
+          const response = await fetch(`/api/user/settings`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch user settings');
+          }
+          const userSettings = await response.json();
+          setFramework(userSettings.settings.framework);
+          registerFivemLuaLanguage(monaco, userSettings.settings.framework);
+          setFiveMLoaded(true);
+        } catch (error) {
+          console.error('Error fetching user settings:', error);
+        }
+      };
+      fetchUserSettings();
     }
-  }, [monaco]);
+  }, [monaco, userId, fiveMLoaded]);
+
+  useEffect(() => {
+    const fetchUserSettings = async () => {
+      try {
+        const response = await fetch(`/api/user/settings`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch user settings');
+        }
+        const userSettings = await response.json();
+        setFramework(userSettings.settings.framework);
+      } catch (error) {
+        console.error('Error fetching user settings:', error);
+      }
+    };
+
+    if (userId) {
+      fetchUserSettings();
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    if (monaco && framework) {
+      registerFivemLuaLanguage(monaco, framework);
+    }
+  }, [monaco, framework]);
 
   const fetchProject = async () => {
     try {
@@ -271,7 +312,6 @@ export default function ProjectPage() {
     
     if (response.ok) {
       const updatedProject = await response.json();
-      console.log('updatedProject', updatedProject);
       setProject(updatedProject);
       showToast('Project saved successfully', 'success');
     } else {
@@ -448,7 +488,7 @@ export default function ProjectPage() {
   }
 
   return (
-    <div className={styles.projectContainer}>
+    <div className={`${styles.projectContainer} ${theme}-mode`}>
       <header className={styles.header}>
         <h1 className={styles.title}>{project.title}</h1>
         <p className={styles.description}>{project.description}</p>
