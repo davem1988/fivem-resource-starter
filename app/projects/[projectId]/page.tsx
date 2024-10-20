@@ -9,6 +9,7 @@ import styles from './ProjectPage.module.css';
 import { Plus, FolderPlus, FilePlus, Trash2, Delete, FolderMinus, Trash } from 'lucide-react';
 import Tooltip from '@/components/Tooltip';
 import { registerFivemLuaLanguage } from '@/utils/fivemLuaLanguageService';
+import { Editor, useMonaco } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
 
 interface File {
@@ -124,7 +125,6 @@ export default function ProjectPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedFilePath, setSelectedFilePath] = useState<string[]>([]);
-  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
   const searchParams = useSearchParams();
   const params = useParams();
@@ -134,6 +134,9 @@ export default function ProjectPage() {
   const projectId = params.projectId as string;
   const title = searchParams.get('title') || '';
   const description = searchParams.get('description') || '';
+  const monaco = useMonaco();
+
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
   useEffect(() => {
     if (isLoaded && userId && projectId) {
@@ -141,9 +144,12 @@ export default function ProjectPage() {
     }
   }, [isLoaded, userId, projectId]);
 
+
   useEffect(() => {
-    registerFivemLuaLanguage();
-  }, []);
+    if (monaco) {
+      registerFivemLuaLanguage(monaco);
+    }
+  }, [monaco]);
 
   const fetchProject = async () => {
     try {
@@ -407,37 +413,38 @@ export default function ProjectPage() {
   }
 
   function handleFileChange(value: string) {
-    if (project && selectedFile) {
-      const newProject = {
-        ...project,
-        rootFolder: {
-          ...project.rootFolder,
-          files: project.rootFolder.files.map(file => 
-            file.name === selectedFile.name ? { ...file, content: value } : file
-          ),
-          folders: project.rootFolder.folders.map(folder => ({
-            ...folder,
-            files: folder.files.map(file => 
-              file.name === selectedFile.name ? { ...file, content: value } : file
-            )
-          }))
-        },
-      };
-      setProject(newProject);
+    if (!project || !selectedFile) return;
+
+    const updatedProject = {
+      ...project,
+      rootFolder: updateFileInFolder(project.rootFolder, selectedFilePath, selectedFile.name, value)
+    };
+
+    setProject(updatedProject);
+    setSelectedFile({ ...selectedFile, content: value });
+  }
+
+  // Helper function to update file content in the folder structure
+  function updateFileInFolder(folder: Folder, path: string[], fileName: string, newContent: string): Folder {
+    // Check if the file is in the current folder
+    const updatedFiles = folder.files.map(file => 
+      file.name === fileName ? { ...file, content: newContent } : file
+    );
+
+    // If we're at the end of the path or the file was found, return the updated folder
+    if (path.length === 0 || updatedFiles.some(file => file.name === fileName)) {
+      return { ...folder, files: updatedFiles };
     }
 
-    setSelectedFile((prevFile) => {
-      if (prevFile === null) {
-        return {
-          name: '',
-          content: value,
-        };
-      }
-      return {
-        ...prevFile,
-        content: value,
-      };
-    });
+    // Otherwise, recurse into the next subfolder
+    const [currentFolder, ...restPath] = path;
+    return {
+      ...folder,
+      files: updatedFiles,
+      folders: folder.folders.map(f => 
+        f.name === currentFolder ? updateFileInFolder(f, restPath, fileName, newContent) : f
+      )
+    };
   }
 
   return (
@@ -494,11 +501,6 @@ export default function ProjectPage() {
                   scrollBeyondLastLine: false,
                   fontSize: 14,
                   suggestOnTriggerCharacters: true,
-                  language: 'fivem-lua',
-                }}
-                onMount={(editor) => {
-                  editorRef.current = editor;
-                  registerFivemLuaLanguage();
                 }}
               />
             </>
